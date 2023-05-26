@@ -6,31 +6,31 @@ using UnityEngine;
 
 public class Moveable : MonoBehaviour {
     // constants
-    private static float GravityAcceleration = -10f;
+    private static float GravityAcceleration = -60.0f;
     
     // configurable
     public float bounceMultiplier = 0.1f;
 
     // inferred fields
-    private float momentumX;
-    private float momentumY;
+    public float momentumX;
+    public float momentumY;
 
-    private int gridX;
-    private int gridY;
-    private int gridHeight;
-    private int gridWidth;
+    public int gridX;
+    public int gridY;
+    public int gridHeight;
+    public int gridWidth;
 
     // related objects
-    private Level level;
+    public Level level;
 
-    public void Start() {
+    public virtual void Start() {
 	// work out level grid position
 	this.level = this.transform.parent.GetComponent<Level>();
 	this.DetermineGridPosition();
     }
     
-    public void Update() {
-	this.DetermineGridPosition();
+    public virtual void Update() {
+	this.DetermineGridPosition();       
 	this.AddGravity();
 	this.ApplyMomentum();
 	this.DetermineGridPosition();
@@ -45,6 +45,12 @@ public class Moveable : MonoBehaviour {
     }
 
     private void AddGravity() {
+	// check if object is on the ground
+	if (this.OnSolidGround()) {	    
+	    return;
+	}
+
+	// if not, add gravity
 	this.AddMomentum(0f, Moveable.GravityAcceleration * Time.deltaTime);
     }
     
@@ -96,7 +102,7 @@ public class Moveable : MonoBehaviour {
 	return true;
     }
 
-    public bool DoesMaterialCollide(Level.Material material) {
+    public virtual bool DoesMaterialCollide(Level.Material material) {
 	return material == Level.Material.Concrete;
     }
     
@@ -105,9 +111,52 @@ public class Moveable : MonoBehaviour {
 	this.momentumY += y;
     }
 
-    public bool IsOnSolidGround() {
+    public void SetMomentumX(float x) {
+	this.momentumX = x;
+    }
+
+    public void SetMomentumY(float y) {
+	this.momentumY = y;
+    }
+
+    // TODO: maybe rewrite these as one method
+    public bool OnSolidGround() {
+	// only counts if object is pressed against floor
+	float bottomY = this.transform.position.y - (float)this.gridHeight / 2;
+	if (bottomY - Math.Floor(bottomY) >= 0.1f) {
+	    return false;
+	}
+	
 	for (int i = 0; i < this.gridWidth + 1; i++) {
 	    if (this.DoesMaterialCollide(this.level.GetBlock(this.gridX + i, this.gridY - 1))) {
+		return true;
+	    }
+	}
+	return false;
+    }
+
+    public bool IsSolidLeft() {
+	float leftX = this.transform.position.x - (float)this.gridWidth / 2;
+	if (leftX - Math.Floor(leftX) >= 0.1f) {
+	    return false;
+	}
+	
+	for (int i = 0; i < this.gridHeight + 1; i++) {
+	    if (this.DoesMaterialCollide(this.level.GetBlock(this.gridX - 1, this.gridY + i))) {
+		return true;
+	    }
+	}
+	return false;
+    }
+
+    public bool IsSolidRight() {
+	float rightX = this.transform.position.x + (float)this.gridWidth / 2;
+	if (Math.Ceiling(rightX) - rightX >= 0.1f) {
+	    return false;
+	}
+	
+	for (int i = 0; i < this.gridHeight + 1; i++) {
+	    if (this.DoesMaterialCollide(this.level.GetBlock(this.gridX + this.gridWidth + 1, this.gridY + i))) {	
 		return true;
 	    }
 	}
