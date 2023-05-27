@@ -38,7 +38,6 @@ public class Moveable : MonoBehaviour {
 	}
 	this.DetermineGridPosition();       
 	this.AddGravity();
-	this.CheckPosition();
 	this.ApplyMomentum();
 	this.DetermineGridPosition();
     }
@@ -61,59 +60,48 @@ public class Moveable : MonoBehaviour {
     }
     
     private void ApplyMomentum() {
-	// can't use translate or the rotation will make this crazy
-	this.transform.position = new Vector2(this.transform.position.x + this.momentumX * Time.deltaTime, this.transform.position.y + this.momentumY * Time.deltaTime);
-    }
-
-    private void CheckPosition() {
-	if (this.IsSolidLeft() && this.momentumX < 0) {
-	    this.transform.position = new Vector3((float)Math.Floor(this.transform.position.x), this.transform.position.y, 0f);
-	    this.momentumX = -1f * this.momentumX * this.bounceMultiplier;
-	} else if (this.IsSolidRight() && this.momentumX > 0) {
-	    this.transform.position = new Vector3((float)Math.Ceiling(this.transform.position.x) - 0.1f, this.transform.position.y, 0f);
-	    this.momentumX = -1f * this.momentumX * this.bounceMultiplier;
-	}
-	if (this.OnSolidGround() && this.momentumY < 0) {
-	    this.transform.position = new Vector3(this.transform.position.x, (float)Math.Floor(this.transform.position.y), 0f);
-	    this.momentumY = -1f * this.momentumY * this.bounceMultiplier;
-	} else if (this.IsSolidUp() && this.momentumY > 0) {
-	    this.transform.position = new Vector3(this.transform.position.x, (float)Math.Ceiling(this.transform.position.y) - 0.1f, 0f);
-	    this.momentumY = -1f * this.momentumY * this.bounceMultiplier;
-	}
-	return;
-	bool corrected = false;
+	// close distance to end of vector 1 blocklength at a time
+	Vector3 unitMove = new Vector3(this.momentumX, this.momentumY, 0).normalized;
+	Vector3 remainingMove = new Vector3(this.momentumX, this.momentumY, 0) * Time.deltaTime;
 
 	// record current grid position
 	int previousGridX = this.gridX;
 	int previousGridY = this.gridY;
+	Vector3 previousPosition = this.transform.position;
 	
-	// move to a different grid space if needed
-	while (!this.IsPositionLegal()) {
-	    if (this.breakOnHit) {
-		// break and don't bother fixing position
-		this.Break();
-		return;
-	    }	    
-	    corrected = true;
-	    previousGridX = this.gridX;
-	    previousGridY = this.gridY;
-	    
-	    // step movement back
-	    Vector2 reverseVector = new Vector2(this.momentumX, this.momentumY) * Time.deltaTime * -1f;
-	    if (reverseVector.magnitude > 1) {
-		reverseVector.Normalize();
-	    }
-	    this.transform.Translate(reverseVector);
-	    this.DetermineGridPosition();            
-	}
+	bool corrected = false;
+	while (remainingMove.magnitude > 0) {
+	    if (remainingMove.magnitude <= unitMove.magnitude) {
+		this.transform.position += remainingMove;
+		remainingMove = new Vector3(0, 0, 0);
+	    } else {
+		this.transform.position += unitMove;
+		remainingMove -= unitMove;
+	    };
 
-	// reverse momentum in bounced direction
-	if (corrected) {
-	    if (previousGridX != this.gridX) {
-		this.momentumX = -1f * this.momentumX * this.bounceMultiplier;	
-	    } else if (previousGridY != this.gridY) {
-		this.momentumY = -1f * this.momentumY * this.bounceMultiplier;
+	    // collision
+	    if (!this.IsPositionLegal()) {
+		// breakables
+		if (this.breakOnHit) {
+		    this.Break();
+		    break;
+		}
+		
+		this.transform.position = previousPosition;
+		
+		// always try bouncing horizontally first
+		if (previousGridX != this.gridX) {
+		    this.momentumX = -1f * this.momentumX * this.bounceMultiplier;	
+		} else if (previousGridY != this.gridY) {
+		    this.momentumY = -1f * this.momentumY * this.bounceMultiplier;
+		}
+		break;
 	    }
+
+	    // no collision
+	    previousPosition = this.transform.position;
+	    previousGridX = this.gridX;
+	    previousGridY = this.gridY;	
 	}
     }
 
@@ -122,6 +110,7 @@ public class Moveable : MonoBehaviour {
     }
     
     private bool IsPositionLegal() {
+	this.DetermineGridPosition();
 	for (int i = 0; i < this.gridWidth + 1; i++) {
 	    for (int j = 0; j < this.gridHeight + 1; j++) {
 		if (this.DoesMaterialCollide(this.level.GetBlock(this.gridX + i, this.gridY + j))) {
