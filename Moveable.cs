@@ -61,7 +61,7 @@ public class Moveable : MonoBehaviour {
     
     private void ApplyMomentum() {
 	// close distance to end of vector 1 blocklength at a time
-	Vector3 unitMove = new Vector3(this.momentumX, this.momentumY, 0).normalized;
+	Vector3 unitMove = new Vector3(this.momentumX, this.momentumY, 0).normalized * 0.1f;
 	Vector3 remainingMove = new Vector3(this.momentumX, this.momentumY, 0) * Time.deltaTime;
 
 	// record current grid position
@@ -88,10 +88,10 @@ public class Moveable : MonoBehaviour {
 		
 		this.transform.position = previousPosition;
 		
-		// always try bouncing horizontally first
 		if (previousGridX != this.gridX) {
 		    this.momentumX = -1f * this.momentumX * this.bounceMultiplier;	
-		} else if (previousGridY != this.gridY) {
+		}
+		if (previousGridY != this.gridY) {
 		    this.momentumY = -1f * this.momentumY * this.bounceMultiplier;
 		}
 		break;
@@ -139,7 +139,6 @@ public class Moveable : MonoBehaviour {
 
     // TODO: maybe rewrite these as one method
     public bool OnSolidGround() {
-	// only counts if object is pressed against floor
 	float bottomY = this.transform.position.y - (float)this.gridHeight / 2;
 	if (bottomY - Math.Floor(bottomY) >= 0.1f) {
 	    return false;
@@ -147,20 +146,6 @@ public class Moveable : MonoBehaviour {
 	
 	for (int i = 0; i < this.gridWidth + 1; i++) {
 	    if (this.DoesMaterialCollide(this.level.GetBlock(this.gridX + i, this.gridY - 1))) {
-		return true;
-	    }
-	}
-	return false;
-    }
-
-    public bool IsSolidUp() {
-	float topY = this.transform.position.y - (float)this.gridHeight / 2;
-	if (Math.Ceiling(topY) - topY >= 0.1f) {
-	    return false;
-	}
-	
-	for (int i = 0; i < this.gridWidth + 1; i++) {
-	    if (this.DoesMaterialCollide(this.level.GetBlock(this.gridX + i, this.gridY + 1))) {
 		return true;
 	    }
 	}

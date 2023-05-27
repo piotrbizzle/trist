@@ -32,7 +32,7 @@ public class Player : Moveable {
     }
 
     private void RefreshJumps() {
-	if (this.OnSolidGround() && this.momentumY <= 0) {
+	if (this.OnSolidGround()) {
 	    // TODO: move to variable maybe
 	    this.jumpsRemaining = 2;
 	}
