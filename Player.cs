@@ -32,8 +32,7 @@ public class Player : Moveable {
     }
 
     private void CheckGuns() {
-	// expect 1 camera + guns in transform
-	int numberOfGuns = this.transform.childCount - 1;
+	int numberOfGuns = this.transform.childCount;
 	float angleIncrement = 360f / numberOfGuns;
 	int gunIndex = 0;
 
@@ -69,6 +68,9 @@ public class Player : Moveable {
 	bool right = Input.GetKey("d");
 	bool down = Input.GetKey("s");
 	bool jump = Input.GetKeyDown("space");
+	bool previousGun = Input.GetKeyDown("q");
+	bool nextGun = Input.GetKeyDown("e");
+	bool discard = Input.GetKeyDown("r");
 	bool mouseClicked = Input.GetMouseButtonDown(0);
 
 	// facing
@@ -107,6 +109,22 @@ public class Player : Moveable {
 	// shoot
 	if (mouseClicked) {
 	    this.activeGun.Fire();
+	}
+
+	// discard gun
+	if (discard) {
+	    // TODO: throw away gun
+	    if (this.activeGun.ammo != -1) {
+		GameObject.Destroy(this.activeGun.gameObject);
+	    }
+	}
+
+	// switch guns
+	if (previousGun) {
+	    this.transform.GetChild(this.transform.childCount - 1).SetAsFirstSibling();
+	}
+	if (nextGun) {
+	    this.transform.GetChild(0).SetAsLastSibling();
 	}
     }
 }

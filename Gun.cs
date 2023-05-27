@@ -7,9 +7,19 @@ public class Gun : MonoBehaviour {
     // configurables
     public float projectileSpeed;
     public Sprite projectileSprite;
+    public bool breakOnHit = true;
+    public bool affectedByGravity = false;
+    public int ammo = -1;
+	
     public Vector3 aimVector;
         
     public void Fire() {
+	if (this.ammo == 0) {
+	    return;
+	} else if (this.ammo > 0) {
+	    this.ammo--;
+	}
+	
 	GameObject projectileGo = new GameObject();
 	projectileGo.transform.position = this.transform.position;
 	projectileGo.transform.rotation = this.transform.rotation;
@@ -18,7 +28,7 @@ public class Gun : MonoBehaviour {
 
 	Projectile projectile = projectileGo.AddComponent<Projectile>();
 	projectile.AddMomentum(this.aimVector.x * this.projectileSpeed, this.aimVector.y * this.projectileSpeed);
-	projectile.breakOnHit = false;
-	projectile.affectedByGravity = true;
+	projectile.breakOnHit = this.breakOnHit;
+	projectile.affectedByGravity = this.affectedByGravity;
     }
 }
