@@ -17,7 +17,7 @@ public class Player : Moveable {
     
     // inferred
     private int jumpsRemaining = 2;
-    private bool isFacingLeft = false;
+    public bool isFacingLeft = false;
     public Gun activeGun;
 
     public override void Start() {
@@ -116,15 +116,14 @@ public class Player : Moveable {
 
 	// shoot
 	if (mouse1Pressed) {
-	    this.activeGun.Fire();
+	    if (this.activeGun != null) {
+		this.activeGun.Fire();
+	    }
 	}
 
 	// discard gun
 	if (discard) {
-	    // TODO: throw away gun
-	    if (this.activeGun.ammo != -1) {
-		GameObject.Destroy(this.activeGun.gameObject);
-	    }
+	    this.activeGun.Discard(this.isFacingLeft);
 	}
 
 	// switch guns

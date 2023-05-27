@@ -19,11 +19,13 @@ public class Gun : MonoBehaviour {
 	if (this.cooldown > 0) {
 	    this.cooldown -= Time.deltaTime;
 	}
-    }
-	
+    }	
     
     public void Fire() {
-	if (this.ammo == 0 || this.cooldown > 0) {
+	if (this.cooldown > 0) {
+	    return;
+	} else if (this.ammo == 0) {
+	    this.Discard(this.transform.parent.GetComponent<Player>().isFacingLeft);
 	    return;
 	} else if (this.ammo > 0) {
 	    this.ammo--;
@@ -42,5 +44,43 @@ public class Gun : MonoBehaviour {
 	projectile.lifetime = 2.0f;
 
 	this.cooldown = this.rateOfFire;
+    }
+
+    public void Discard(bool isFacingLeft) {
+	if (this.ammo != -1) {
+	    // create GunItem
+	    GameObject gunItemGo = new GameObject();
+	    gunItemGo.transform.position = this.transform.position;
+	    gunItemGo.transform.SetParent(this.transform.parent.parent);
+	    gunItemGo.AddComponent<SpriteRenderer>().sprite = this.GetComponent<SpriteRenderer>().sprite;
+	    GunItem gunItem = gunItemGo.AddComponent<GunItem>();
+	    gunItem.gun = this.GetComponent<Gun>();
+
+	    if (isFacingLeft) {
+		gunItem.SetMomentumX(this.transform.parent.GetComponent<Player>().momentumX + 5f);
+	    } else {
+		gunItem.SetMomentumX(this.transform.parent.GetComponent<Player>().momentumX - 5f);
+	    }
+	    gunItem.SetMomentumY(5f);
+	    
+	    // destroy Gun
+	    GameObject.Destroy(this.gameObject);
+	}
+    }
+	
+
+    public void CopyFromTemplate(Gun gun, Sprite sprite) {
+	// there has to be a better way
+	this.projectileSpeed = gun.projectileSpeed;
+	this.projectileSprite = gun.projectileSprite;
+	this.breakOnHit = gun.breakOnHit;
+	this.affectedByGravity = gun.affectedByGravity;
+	this.ammo = gun.ammo;
+	this.rateOfFire = gun.rateOfFire;
+	
+	// todo get from gun instead of gunitem
+	this.gameObject.AddComponent<SpriteRenderer>().sprite = sprite;
+	this.gameObject.GetComponent<SpriteRenderer>().sortingLayerName = "Aimer"
+	    ;
     }
 }
