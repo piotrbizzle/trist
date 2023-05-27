@@ -71,7 +71,7 @@ public class Player : Moveable {
 	bool previousGun = Input.GetKeyDown("q");
 	bool nextGun = Input.GetKeyDown("e");
 	bool discard = Input.GetKeyDown("r");
-	bool mouseClicked = Input.GetMouseButtonDown(0);
+	bool mouse1Pressed = Input.GetMouseButton(0);
 
 	// facing
 	if (left && !right) {
@@ -107,7 +107,7 @@ public class Player : Moveable {
 	}
 
 	// shoot
-	if (mouseClicked) {
+	if (mouse1Pressed) {
 	    this.activeGun.Fire();
 	}
 

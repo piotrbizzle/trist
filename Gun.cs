@@ -10,11 +10,20 @@ public class Gun : MonoBehaviour {
     public bool breakOnHit = true;
     public bool affectedByGravity = false;
     public int ammo = -1;
+    public float rateOfFire = 0.5f;
 	
     public Vector3 aimVector;
-        
+    private float cooldown;
+
+    public void Update() {
+	if (this.cooldown > 0) {
+	    this.cooldown -= Time.deltaTime;
+	}
+    }
+	
+    
     public void Fire() {
-	if (this.ammo == 0) {
+	if (this.ammo == 0 || this.cooldown > 0) {
 	    return;
 	} else if (this.ammo > 0) {
 	    this.ammo--;
@@ -30,5 +39,7 @@ public class Gun : MonoBehaviour {
 	projectile.AddMomentum(this.aimVector.x * this.projectileSpeed, this.aimVector.y * this.projectileSpeed);
 	projectile.breakOnHit = this.breakOnHit;
 	projectile.affectedByGravity = this.affectedByGravity;
+
+	this.cooldown = this.rateOfFire;
     }
 }
