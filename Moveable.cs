@@ -32,11 +32,15 @@ public class Moveable : MonoBehaviour {
     }
     
     public virtual void Update() {
+	// avoid stutter on startup
+	if (Time.deltaTime > 0.1f) {
+	    return;
+	}
 	this.DetermineGridPosition();       
 	this.AddGravity();
+	this.CheckPosition();
 	this.ApplyMomentum();
 	this.DetermineGridPosition();
-	this.CorrectPosition();
     }
 
     private void DetermineGridPosition() {
@@ -61,7 +65,22 @@ public class Moveable : MonoBehaviour {
 	this.transform.position = new Vector2(this.transform.position.x + this.momentumX * Time.deltaTime, this.transform.position.y + this.momentumY * Time.deltaTime);
     }
 
-    private void CorrectPosition() {
+    private void CheckPosition() {
+	if (this.IsSolidLeft() && this.momentumX < 0) {
+	    this.transform.position = new Vector3((float)Math.Floor(this.transform.position.x), this.transform.position.y, 0f);
+	    this.momentumX = -1f * this.momentumX * this.bounceMultiplier;
+	} else if (this.IsSolidRight() && this.momentumX > 0) {
+	    this.transform.position = new Vector3((float)Math.Ceiling(this.transform.position.x) - 0.1f, this.transform.position.y, 0f);
+	    this.momentumX = -1f * this.momentumX * this.bounceMultiplier;
+	}
+	if (this.OnSolidGround() && this.momentumY < 0) {
+	    this.transform.position = new Vector3(this.transform.position.x, (float)Math.Floor(this.transform.position.y), 0f);
+	    this.momentumY = -1f * this.momentumY * this.bounceMultiplier;
+	} else if (this.IsSolidUp() && this.momentumY > 0) {
+	    this.transform.position = new Vector3(this.transform.position.x, (float)Math.Ceiling(this.transform.position.y) - 0.1f, 0f);
+	    this.momentumY = -1f * this.momentumY * this.bounceMultiplier;
+	}
+	return;
 	bool corrected = false;
 
 	// record current grid position
@@ -146,6 +165,20 @@ public class Moveable : MonoBehaviour {
 	return false;
     }
 
+    public bool IsSolidUp() {
+	float topY = this.transform.position.y - (float)this.gridHeight / 2;
+	if (Math.Ceiling(topY) - topY >= 0.1f) {
+	    return false;
+	}
+	
+	for (int i = 0; i < this.gridWidth + 1; i++) {
+	    if (this.DoesMaterialCollide(this.level.GetBlock(this.gridX + i, this.gridY + 1))) {
+		return true;
+	    }
+	}
+	return false;
+    }
+    
     public bool IsSolidLeft() {
 	float leftX = this.transform.position.x - (float)this.gridWidth / 2;
 	if (leftX - Math.Floor(leftX) >= 0.1f) {

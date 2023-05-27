@@ -7,6 +7,13 @@ public class Player : Moveable {
     public float MoveSpeed = 15f;
     public float JumpSpeed = 20f;
     public float DiveSpeed = 30f;
+    private static Quaternion[][] RotationsMap = new Quaternion[][]{
+	new Quaternion[]{Quaternion.AngleAxis(180, Vector3.forward)},
+	new Quaternion[]{Quaternion.AngleAxis(120, Vector3.forward), Quaternion.AngleAxis(240, Vector3.forward)},
+	new Quaternion[]{Quaternion.AngleAxis(90, Vector3.forward), Quaternion.AngleAxis(180, Vector3.forward), Quaternion.AngleAxis(270, Vector3.forward)},
+	new Quaternion[]{Quaternion.AngleAxis(72, Vector3.forward), Quaternion.AngleAxis(144, Vector3.forward), Quaternion.AngleAxis(216, Vector3.forward), Quaternion.AngleAxis(288, Vector3.forward)},
+	new Quaternion[]{Quaternion.AngleAxis(60, Vector3.forward), Quaternion.AngleAxis(120, Vector3.forward), Quaternion.AngleAxis(180, Vector3.forward), Quaternion.AngleAxis(240, Vector3.forward), Quaternion.AngleAxis(300, Vector3.forward)},
+	    };
     
     // inferred
     private int jumpsRemaining = 2;
@@ -33,7 +40,6 @@ public class Player : Moveable {
 
     private void CheckGuns() {
 	int numberOfGuns = this.transform.childCount;
-	float angleIncrement = 360f / numberOfGuns;
 	int gunIndex = 0;
 
 	// get mouse pointer location in world
@@ -52,11 +58,13 @@ public class Player : Moveable {
 		this.activeGun = gun;
 		gun.aimVector = (mousePointerPosition - this.transform.position).normalized;
 		child.transform.rotation = baseRotation;
+		child.transform.position = this.transform.position + new Vector3(0f, 0.5f, 0.0f);
+		child.transform.Translate(Vector2.up);
 	    } else {
-		child.transform.rotation = baseRotation * Quaternion.AngleAxis(angleIncrement * gunIndex, Vector3.forward);
+		child.transform.rotation = baseRotation * Player.RotationsMap[numberOfGuns - 2][gunIndex - 1];
+		child.transform.position = this.transform.position + new Vector3(0f, 0.5f, 0.0f);
+		child.transform.Translate(Vector2.up);
 	    }
-	    child.transform.position = this.transform.position + new Vector3(0f, 0.5f, 0.0f);
-	    child.transform.Translate(Vector2.up);
 		
 	    gunIndex++;	    
 	}
