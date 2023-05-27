@@ -68,8 +68,7 @@ public class Moveable : MonoBehaviour {
 	int previousGridX = this.gridX;
 	int previousGridY = this.gridY;
 	Vector3 previousPosition = this.transform.position;
-	
-	bool corrected = false;
+
 	while (remainingMove.magnitude > 0) {
 	    if (remainingMove.magnitude <= unitMove.magnitude) {
 		this.transform.position += remainingMove;

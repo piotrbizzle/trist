@@ -39,6 +39,7 @@ public class Gun : MonoBehaviour {
 	projectile.AddMomentum(this.aimVector.x * this.projectileSpeed, this.aimVector.y * this.projectileSpeed);
 	projectile.breakOnHit = this.breakOnHit;
 	projectile.affectedByGravity = this.affectedByGravity;
+	projectile.lifetime = 2.0f;
 
 	this.cooldown = this.rateOfFire;
     }
