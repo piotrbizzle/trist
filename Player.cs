@@ -11,10 +11,16 @@ public class Player : Moveable {
     // inferred
     private int jumpsRemaining = 2;
     private bool isFacingLeft = false;
+    public Gun activeGun;
+
+    public override void Start() {
+	base.Start();
+    }
     
-    public override void Update() {	
+    public override void Update() {
 	this.ControlPlayer();
-	this.RefreshJumps();
+	this.RefreshJumps();	
+        this.CheckGuns();
 	base.Update();
     }
 
@@ -24,6 +30,38 @@ public class Player : Moveable {
 	    this.jumpsRemaining = 2;
 	}
     }
+
+    private void CheckGuns() {
+	// expect 1 camera + guns in transform
+	int numberOfGuns = this.transform.childCount - 1;
+	float angleIncrement = 360f / numberOfGuns;
+	int gunIndex = 0;
+
+	// get mouse pointer location in world
+	Vector3 mousePointerPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+	mousePointerPosition = new Vector3(mousePointerPosition.x, mousePointerPosition.y, 0.0f);
+
+	// rotate and position gun
+	Quaternion baseRotation = Quaternion.FromToRotation(Vector3.up, mousePointerPosition - this.transform.position);
+	foreach (Transform child in this.transform) {
+	    Gun gun = child.GetComponent<Gun>();
+	    if (gun == null) {
+		continue;
+	    }
+	    // set first one to active gun
+	    if (gunIndex == 0) {
+		this.activeGun = gun;
+		gun.aimVector = (mousePointerPosition - this.transform.position).normalized;
+		child.transform.rotation = baseRotation;
+	    } else {
+		child.transform.rotation = baseRotation * Quaternion.AngleAxis(angleIncrement * gunIndex, Vector3.forward);
+	    }
+	    child.transform.position = this.transform.position + new Vector3(0f, 0.5f, 0.0f);
+	    child.transform.Translate(Vector2.up);
+		
+	    gunIndex++;	    
+	}
+    }
     
     private void ControlPlayer() {
 	// get inputs
@@ -31,6 +69,7 @@ public class Player : Moveable {
 	bool right = Input.GetKey("d");
 	bool down = Input.GetKey("s");
 	bool jump = Input.GetKeyDown("space");
+	bool mouseClicked = Input.GetMouseButtonDown(0);
 
 	// facing
 	if (left && !right) {
@@ -48,7 +87,7 @@ public class Player : Moveable {
 	    this.SetMomentumX(0f);	    
 	}
 
-	// jump
+	// dive
 	if (down) {
 	    if (!this.OnSolidGround()) {
 		if (this.momentumY > this.DiveSpeed * -1f) {
@@ -59,11 +98,15 @@ public class Player : Moveable {
 	
 	// sweet jumps
 	if (jump) {
-	    // regular jump
 	    if (this.jumpsRemaining > 0) {
 		this.SetMomentumY(this.JumpSpeed);
 		this.jumpsRemaining--;		
 	    }
+	}
+
+	// shoot
+	if (mouseClicked) {
+	    this.activeGun.Fire();
 	}
     }
 }

@@ -10,7 +10,9 @@ public class Moveable : MonoBehaviour {
     
     // configurable
     public float bounceMultiplier = 0.1f;
-
+    public bool breakOnHit = false;
+    public bool affectedByGravity = true;
+    
     // inferred fields
     public float momentumX;
     public float momentumY;
@@ -46,7 +48,7 @@ public class Moveable : MonoBehaviour {
 
     private void AddGravity() {
 	// check if object is on the ground
-	if (this.OnSolidGround()) {	    
+	if (!this.affectedByGravity || this.OnSolidGround()) {
 	    return;
 	}
 
@@ -55,7 +57,8 @@ public class Moveable : MonoBehaviour {
     }
     
     private void ApplyMomentum() {
-	this.transform.Translate(new Vector2(this.momentumX, this.momentumY) * Time.deltaTime);
+	// can't use translate or the rotation will make this crazy
+	this.transform.position = new Vector2(this.transform.position.x + this.momentumX * Time.deltaTime, this.transform.position.y + this.momentumY * Time.deltaTime);
     }
 
     private void CorrectPosition() {
@@ -67,6 +70,11 @@ public class Moveable : MonoBehaviour {
 	
 	// move to a different grid space if needed
 	while (!this.IsPositionLegal()) {
+	    if (this.breakOnHit) {
+		// break and don't bother fixing position
+		this.Break();
+		return;
+	    }	    
 	    corrected = true;
 	    previousGridX = this.gridX;
 	    previousGridY = this.gridY;
@@ -82,13 +90,16 @@ public class Moveable : MonoBehaviour {
 
 	// reverse momentum in bounced direction
 	if (corrected) {
-	    // always try bouncing X before bouncing Y
 	    if (previousGridX != this.gridX) {
-		this.momentumX = -1f * this.momentumX * this.bounceMultiplier;
+		this.momentumX = -1f * this.momentumX * this.bounceMultiplier;	
 	    } else if (previousGridY != this.gridY) {
 		this.momentumY = -1f * this.momentumY * this.bounceMultiplier;
 	    }
 	}
+    }
+
+    private void Break() {
+	GameObject.Destroy(this.gameObject);
     }
     
     private bool IsPositionLegal() {
