@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : Moveable {
     // constants
+    public static int MaxGuns = 6;
     public float MoveSpeed = 15f;
     public float JumpSpeed = 20f;
     public float DiveSpeed = 30f;
@@ -55,12 +56,14 @@ public class Player : Moveable {
 	    }
 	    // set first one to active gun
 	    if (gunIndex == 0) {
+		gun.Select();
 		this.activeGun = gun;
 		gun.aimVector = (mousePointerPosition - this.transform.position).normalized;
 		child.transform.rotation = baseRotation;
 		child.transform.position = this.transform.position + new Vector3(0f, 0.5f, 0.0f);
 		child.transform.Translate(Vector2.up);
 	    } else {
+		gun.Deselect();
 		child.transform.rotation = baseRotation * Player.RotationsMap[numberOfGuns - 2][gunIndex - 1];
 		child.transform.position = this.transform.position + new Vector3(0f, 0.5f, 0.0f);
 		child.transform.Translate(Vector2.up);

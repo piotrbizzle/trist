@@ -11,7 +11,10 @@ public class Gun : MonoBehaviour {
     public bool affectedByGravity = false;
     public int ammo = -1;
     public float rateOfFire = 0.5f;
-	
+    public Sprite deselectedSprite;
+    public Sprite selectedSprite;
+    public Sprite itemSprite;
+    
     public Vector3 aimVector;
     private float cooldown;
 
@@ -52,7 +55,7 @@ public class Gun : MonoBehaviour {
 	    GameObject gunItemGo = new GameObject();
 	    gunItemGo.transform.position = this.transform.position;
 	    gunItemGo.transform.SetParent(this.transform.parent.parent);
-	    gunItemGo.AddComponent<SpriteRenderer>().sprite = this.GetComponent<SpriteRenderer>().sprite;
+	    gunItemGo.AddComponent<SpriteRenderer>().sprite = this.itemSprite;
 	    GunItem gunItem = gunItemGo.AddComponent<GunItem>();
 	    gunItem.gun = this.GetComponent<Gun>();
 
@@ -69,7 +72,15 @@ public class Gun : MonoBehaviour {
     }
 	
 
-    public void CopyFromTemplate(Gun gun, Sprite sprite) {
+    public void Select() {
+	this.gameObject.GetComponent<SpriteRenderer>().sprite = this.selectedSprite;
+    }
+
+    public void Deselect() {
+	this.gameObject.GetComponent<SpriteRenderer>().sprite = this.deselectedSprite;
+    }
+    
+    public void CopyFromTemplate(Gun gun, Sprite itemSprite) {
 	// there has to be a better way
 	this.projectileSpeed = gun.projectileSpeed;
 	this.projectileSprite = gun.projectileSprite;
@@ -77,10 +88,12 @@ public class Gun : MonoBehaviour {
 	this.affectedByGravity = gun.affectedByGravity;
 	this.ammo = gun.ammo;
 	this.rateOfFire = gun.rateOfFire;
+	this.selectedSprite = gun.selectedSprite;
+	this.deselectedSprite = gun.deselectedSprite;
+	this.itemSprite = itemSprite;
 	
-	// todo get from gun instead of gunitem
-	this.gameObject.AddComponent<SpriteRenderer>().sprite = sprite;
-	this.gameObject.GetComponent<SpriteRenderer>().sortingLayerName = "Aimer"
-	    ;
+	// set sprite
+	this.gameObject.AddComponent<SpriteRenderer>().sprite = this.deselectedSprite;
+	this.gameObject.GetComponent<SpriteRenderer>().sortingLayerName = "Aimer";
     }
 }

@@ -33,7 +33,7 @@ public class GunItem : Moveable {
     
     public override void Update() {
 	// empty guns expire
-	if (this.expires) {
+	if (this.expires && !this.clicked) {
 	    this.lifetime -= Time.deltaTime;
 	    if (this.lifetime <= 0) {
 		GameObject.Destroy(this.gameObject);
@@ -45,12 +45,17 @@ public class GunItem : Moveable {
 	    // check if touching player	    
 	    Vector3 towardPlayerVector = (this.player.transform.position - this.transform.position);
 	    if (towardPlayerVector.magnitude < 1f) {
-		// add Gun to player then destroy this item
-		GameObject gunGo = new GameObject();
-		gunGo.AddComponent<Gun>().CopyFromTemplate(this.gun, this.GetComponent<SpriteRenderer>().sprite);
-		gunGo.transform.SetParent(this.player.transform);
-		GameObject.Destroy(this.gameObject);
-		return;
+		if (this.player.transform.childCount == Player.MaxGuns) {
+		    // unclick if player guns are full
+		    this.clicked = false;		   
+		} else {
+		    // add Gun to player then destroy this item
+		    GameObject gunGo = new GameObject();
+		    gunGo.AddComponent<Gun>().CopyFromTemplate(this.gun, this.gameObject.GetComponent<SpriteRenderer>().sprite);
+		    gunGo.transform.SetParent(this.player.transform);
+		    GameObject.Destroy(this.gameObject);
+		    return;
+		}
 	    }
 
 	    // move toward player
