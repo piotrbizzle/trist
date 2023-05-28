@@ -5,18 +5,21 @@ using UnityEngine.EventSystems;
 
 public class NPC : Shootable {
     private float walkSpeed = 2f;
-
     public bool isFacingLeft;    
     
     public override void Update() {
-	this.Wander();
+	this.NPCMove();
 	base.Update();
     }
 
-    private bool IsApproachingEdge() {
+    public virtual void NPCMove() {
+	this.Wander();
+    }
+
+    public bool IsApproachingEdge() {
 	// check if you're going to walk off a ledge
 	if (this.isFacingLeft) {
-	    return this.level.GetBlock(this.gridX - this.gridWidth, this.gridY - 1) == Level.Material.Air;
+	    return this.level.GetBlock(this.gridX + 1 - this.gridWidth, this.gridY - 1) == Level.Material.Air;
 	} else {
 	    return this.level.GetBlock(this.gridX + this.gridWidth, this.gridY - 1) == Level.Material.Air;
 	}
@@ -25,7 +28,7 @@ public class NPC : Shootable {
     public void Wander() {
 	if (!this.OnSolidGround()) {
 	    return;
-	}	
+	}
 	if (this.isFacingLeft) {
 	    if (this.IsApproachingEdge() || this.IsSolidLeft()) {
 		this.isFacingLeft = false;

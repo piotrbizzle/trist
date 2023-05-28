@@ -15,6 +15,7 @@ public class Gun : MonoBehaviour {
     public Sprite selectedSprite;
     public Sprite itemSprite;
     public bool pulls;
+
     
     public Vector3 aimVector;
     private float cooldown;
