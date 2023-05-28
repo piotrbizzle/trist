@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Shootable : Moveable {
+    // configurable
+    public bool pullable;
+    
     private int previousGridX;
     private int previousGridY;
     public bool markedForBreak;
@@ -30,5 +33,9 @@ public class Shootable : Moveable {
 
     public override void Break() {
 	this.markedForBreak = true;
+    }
+
+    public virtual void Hit() {
+	this.Break();
     }
 }

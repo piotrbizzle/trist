@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Projectile : Moveable {
     public float lifetime;
+    public bool pulls;
     
     public override void Update() {
 	this.lifetime -= Time.deltaTime;
@@ -19,8 +20,12 @@ public class Projectile : Moveable {
 	// NOTE assumes projectiles don't occupy multiple spaces!
 	List<Shootable> shootables = this.level.GetTargets(this.gridX, gridY);
 	if (shootables.Count > 0) {
-	    bool directHit = false;
 	    foreach (Shootable shootable in shootables) {
+		// skip checking hits on incompatible pull/pullable pairs
+		if (!this.pulls && shootable.pullable) {
+		    continue;
+		}
+
 		// don't things that are about to break
 		if (shootable.markedForBreak) {
 		    continue;
@@ -42,17 +47,11 @@ public class Projectile : Moveable {
 		    continue;
 		}
 		
-		// TODO: implement Hit distinguished from Break
-		Debug.Log("hit!");
-		directHit = true;
-		shootable.Break();
-	    }
-	    
-	    // end movement scan if we hit something
-	    if (directHit) {		
+		// end checking if we hit something
+		shootable.Hit();
 		this.Break();
 		return false;
-	    }	    
+	    }	   
 	}
 	
 	// otherwise, check move as normal

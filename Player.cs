@@ -47,7 +47,9 @@ public class Player : Moveable {
 	Vector3 mousePointerPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 	mousePointerPosition = new Vector3(mousePointerPosition.x, mousePointerPosition.y, 0.0f);
 
-	// rotate and position gun
+	// rotate and position guns
+	this.GetComponent<Gun>().aimVector = (mousePointerPosition - this.transform.position).normalized;
+
 	Quaternion baseRotation = Quaternion.FromToRotation(Vector3.up, mousePointerPosition - this.transform.position);
 	foreach (Transform child in this.transform) {
 	    Gun gun = child.GetComponent<Gun>();
@@ -61,7 +63,7 @@ public class Player : Moveable {
 		gun.aimVector = (mousePointerPosition - this.transform.position).normalized;
 		child.transform.rotation = baseRotation;
 		child.transform.position = this.transform.position + new Vector3(0f, 0.5f, 0.0f);
-		child.transform.Translate(Vector2.up);
+		child.transform.Translate(Vector2.up);		
 	    } else {
 		gun.Deselect();
 		child.transform.rotation = baseRotation * Player.RotationsMap[numberOfGuns - 2][gunIndex - 1];
@@ -82,7 +84,9 @@ public class Player : Moveable {
 	bool previousGun = Input.GetKeyDown("q");
 	bool nextGun = Input.GetKeyDown("e");
 	bool discard = Input.GetKeyDown("r");
-	bool mouse1Pressed = Input.GetMouseButton(0);
+	bool mouse0Pressed = Input.GetMouseButton(0);
+	bool mouse1Pressed = Input.GetMouseButton(1);
+	// TODO: use scroll wheel
 
 	// facing
 	if (left && !right) {
@@ -117,13 +121,17 @@ public class Player : Moveable {
 	    }
 	}
 
+	if (mouse1Pressed) {
+	    this.GetComponent<Gun>().Fire();
+	}
+
 	// gun stuff only past this point
 	if (this.activeGun == null) {
 	    return;
 	}
 
 	// shoot
-	if (mouse1Pressed) {
+	if (mouse0Pressed) {
 	    this.activeGun.Fire();
 	}
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class GunItem : Moveable {
+public class GunItem : Shootable {
     // constants
     public static float EmptyGunLifetime = 3f;
     public static float GunFlySpeed = 6f;
@@ -11,7 +11,7 @@ public class GunItem : Moveable {
     // gun template
     public Gun gun;
 
-    private bool clicked;
+    private bool pulled;
     private bool expires;
     private float lifetime;
 
@@ -21,7 +21,8 @@ public class GunItem : Moveable {
     
     public override void Start() {
 	base.Start();
-	
+
+	this.pullable = true;
 	this.player = GameObject.Find("level/player").GetComponent<Player>();
 	this.gameObject.AddComponent<BoxCollider2D>().isTrigger = true;
 	
@@ -33,27 +34,27 @@ public class GunItem : Moveable {
     
     public override void Update() {
 	// empty guns expire
-	if (this.expires && !this.clicked) {
+	if (this.expires && !this.pulled) {
 	    this.lifetime -= Time.deltaTime;
 	    if (this.lifetime <= 0) {
-		GameObject.Destroy(this.gameObject);
+		this.Break();
 		return;
 	    }
 	}
 
-	if (this.clicked) {
+	if (this.pulled && !this.markedForBreak) {
 	    // check if touching player	    
 	    Vector3 towardPlayerVector = (this.player.transform.position - this.transform.position);
 	    if (towardPlayerVector.magnitude < 1f) {
 		if (this.player.transform.childCount == Player.MaxGuns) {
 		    // unclick if player guns are full
-		    this.clicked = false;		   
+		    this.pulled = false;		   
 		} else {
 		    // add Gun to player then destroy this item
 		    GameObject gunGo = new GameObject();
 		    gunGo.AddComponent<Gun>().CopyFromTemplate(this.gun, this.gameObject.GetComponent<SpriteRenderer>().sprite);
 		    gunGo.transform.SetParent(this.player.transform);
-		    GameObject.Destroy(this.gameObject);
+		    this.Break();
 		    return;
 		}
 	    }
@@ -67,11 +68,7 @@ public class GunItem : Moveable {
 	base.Update();
     }
 
-    public void OnMouseOver() {
-	// respond to right click only
-	if (!Input.GetMouseButtonDown(1)) {
-	    return;
-	}
-	this.clicked = true;	
+    public override void Hit() {
+	this.pulled = true;
     }
 }

@@ -14,6 +14,7 @@ public class Gun : MonoBehaviour {
     public Sprite deselectedSprite;
     public Sprite selectedSprite;
     public Sprite itemSprite;
+    public bool pulls;
     
     public Vector3 aimVector;
     private float cooldown;
@@ -38,13 +39,21 @@ public class Gun : MonoBehaviour {
 	projectileGo.transform.position = this.transform.position;
 	projectileGo.transform.rotation = this.transform.rotation;
 	projectileGo.AddComponent<SpriteRenderer>().sprite = this.projectileSprite;
-	projectileGo.transform.SetParent(this.transform.parent.parent);
+	
+	if (this.ammo != -1) {
+	    // pickupable weapon
+	    projectileGo.transform.SetParent(this.transform.parent.parent);
+	} else {
+	    // player weapon
+	    projectileGo.transform.SetParent(this.transform.parent);
+	}
 
 	Projectile projectile = projectileGo.AddComponent<Projectile>();
 	projectile.AddMomentum(this.aimVector.x * this.projectileSpeed, this.aimVector.y * this.projectileSpeed);
 	projectile.breakOnHit = this.breakOnHit;
 	projectile.affectedByGravity = this.affectedByGravity;
 	projectile.lifetime = 2.0f;
+	projectile.pulls = this.pulls;
 
 	this.cooldown = this.rateOfFire;
     }
