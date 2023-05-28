@@ -73,6 +73,9 @@ public class Level : MonoBehaviour {
     }   
 
     public void UpdateTarget(Shootable target) {
+	if (target.markedForBreak) {
+	    return;
+	}
 	if (target.gridX < 0 || target.gridX >= this.blocksX || target.gridY < 0 || target.gridY >= this.blocksY) {
 	    // target out of level, destroy it
 	    this.UnregisterTarget(target);

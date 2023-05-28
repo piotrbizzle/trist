@@ -24,7 +24,6 @@ public class GunItem : Shootable {
 
 	this.pullable = true;
 	this.player = GameObject.Find("level/player").GetComponent<Player>();
-	this.gameObject.AddComponent<BoxCollider2D>().isTrigger = true;
 	
 	if (this.gun.ammo == 0) {
 	    this.expires = true;
