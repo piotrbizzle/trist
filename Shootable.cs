@@ -6,7 +6,7 @@ using UnityEngine;
 public class Shootable : Moveable {
     private int previousGridX;
     private int previousGridY;
-    private bool markedForBreak;
+    public bool markedForBreak;
     private bool registered;
 
     public override void Update() {
@@ -28,7 +28,7 @@ public class Shootable : Moveable {
 	}
     }
 
-    public void Break() {
+    public override void Break() {
 	this.markedForBreak = true;
     }
 }

@@ -16,15 +16,43 @@ public class Projectile : Moveable {
 
     public override bool CheckPartialMove(Vector3 previousPosition, int previousGridX, int previousGridY) {
 	// check if a target is hit
-	// NOTE assumes targets don't occupy multiple spaces!
+	// NOTE assumes projectiles don't occupy multiple spaces!
 	List<Shootable> shootables = this.level.GetTargets(this.gridX, gridY);
 	if (shootables.Count > 0) {
+	    bool directHit = false;
 	    foreach (Shootable shootable in shootables) {
+		// don't things that are about to break
+		if (shootable.markedForBreak) {
+		    continue;
+		}
+
+		// precise hitbox check
+		float shootableHalfWidth = shootable.GetComponent<SpriteRenderer>().sprite.rect.width / 200f;
+		float shootableHalfHeight = shootable.GetComponent<SpriteRenderer>().sprite.rect.height / 200f;
+		if (this.transform.position.x < shootable.transform.position.x - shootableHalfWidth) {
+		    continue;
+		}
+		if (this.transform.position.x > shootable.transform.position.x + shootableHalfWidth) {		    
+		    continue;
+		}
+		if (this.transform.position.y < shootable.transform.position.y - shootableHalfHeight) {
+		    continue;
+		}
+		if (this.transform.position.y > shootable.transform.position.y + shootableHalfHeight) {		    
+		    continue;
+		}
+		
 		// TODO: implement Hit distinguished from Break
+		Debug.Log("hit!");
+		directHit = true;
 		shootable.Break();
 	    }
-	    this.Break();
-	    return false;
+	    
+	    // end movement scan if we hit something
+	    if (directHit) {		
+		this.Break();
+		return false;
+	    }	    
 	}
 	
 	// otherwise, check move as normal
