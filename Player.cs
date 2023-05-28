@@ -117,11 +117,14 @@ public class Player : Moveable {
 	    }
 	}
 
+	// gun stuff only past this point
+	if (this.activeGun == null) {
+	    return;
+	}
+
 	// shoot
 	if (mouse1Pressed) {
-	    if (this.activeGun != null) {
-		this.activeGun.Fire();
-	    }
+	    this.activeGun.Fire();
 	}
 
 	// discard gun

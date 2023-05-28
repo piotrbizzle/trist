@@ -78,29 +78,37 @@ public class Moveable : MonoBehaviour {
 		remainingMove -= unitMove;
 	    };
 
-	    // collision
-	    if (!this.IsPositionLegal()) {
-		// breakables
-		if (this.breakOnHit) {
-		    this.Break();
-		    break;
-		}
-		
-		this.transform.position = previousPosition;
-		
-		if (previousGridX != this.gridX) {
-		    this.momentumX = -1f * this.momentumX * this.bounceMultiplier;	
-		}
-		if (previousGridY != this.gridY) {
-		    this.momentumY = -1f * this.momentumY * this.bounceMultiplier;
-		}
-		break;
-	    }
+	    // check for collisions
+	    this.CheckPartialMove(previousPosition, previousGridX, previousGridY);
 
 	    // no collision
 	    previousPosition = this.transform.position;
 	    previousGridX = this.gridX;
 	    previousGridY = this.gridY;	
+	}
+    }
+
+    // returns true if partial move is safe else false
+    public virtual bool CheckPartialMove(Vector3 previousPosition, int previousGridX, int previousGridY) {
+	// collision
+	if (!this.IsPositionLegal()) {
+	    // breakables
+	    if (this.breakOnHit) {
+		this.Break();
+		return false;
+	    }
+		
+	    this.transform.position = previousPosition;
+		
+	    if (previousGridX != this.gridX) {
+		this.momentumX = -1f * this.momentumX * this.bounceMultiplier;	
+	    }
+	    if (previousGridY != this.gridY) {
+		this.momentumY = -1f * this.momentumY * this.bounceMultiplier;
+	    }
+	    return false;
+	} else {
+	    return true;
 	}
     }
 
