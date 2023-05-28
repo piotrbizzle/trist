@@ -46,6 +46,7 @@ public class Level : MonoBehaviour {
 	this.blockGrid[x,y] = material;
     }
 
+    // TODO: some targets may not be 1x1!
     public void RegisterTarget(Shootable target) {
 	if (target.gridX < 0 || target.gridX >= this.blocksX || target.gridY < 0 || target.gridY >= this.blocksY) {
 	    // target out of level
@@ -74,5 +75,13 @@ public class Level : MonoBehaviour {
 	this.targetRegistry[targetID] = new IntVector2(target.gridX, target.gridY);
 	this.targetGrid[previousPosition.x, previousPosition.y].Remove(target);	
 	this.targetGrid[target.gridX, target.gridY].Add(target);	
-    } 
+    }
+
+    public List<Shootable> GetTargets(int x, int y) {
+	if (x < 0 || x >= this.blocksX || y < 0 || y >= this.blocksY) {
+	    // out of bounds
+	    return new List<Shootable>();
+	}
+	return targetGrid[x, y];
+    }
 }

@@ -13,4 +13,21 @@ public class Projectile : Moveable {
 	}
 	base.Update();
     }
+
+    public override bool CheckPartialMove(Vector3 previousPosition, int previousGridX, int previousGridY) {
+	// check if a target is hit
+	// NOTE assumes targets don't occupy multiple spaces!
+	List<Shootable> shootables = this.level.GetTargets(this.gridX, gridY);
+	if (shootables.Count > 0) {
+	    foreach (Shootable shootable in shootables) {
+		// TODO: implement Hit distinguished from Break
+		shootable.Break();
+	    }
+	    this.Break();
+	    return false;
+	}
+	
+	// otherwise, check move as normal
+	return base.CheckPartialMove(previousPosition, previousGridX, previousGridY);
+    }
 }

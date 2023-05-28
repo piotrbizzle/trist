@@ -6,13 +6,24 @@ using UnityEngine;
 public class Shootable : Moveable {
     private int previousGridX;
     private int previousGridY;
+    private bool markedForBreak;
+    private bool registered;
     
     public override void Start() {
 	base.Start();
-	this.level.RegisterTarget(this);
     }
 
     public override void Update() {
+	if (!this.registered) {
+	    this.level.RegisterTarget(this);
+	    this.registered = true;
+	}
+	if (this.markedForBreak) {
+	    this.level.UnregisterTarget(this);
+	    GameObject.Destroy(this.gameObject);
+	    return;
+	}
+	
 	this.previousGridX = this.gridX;
 	this.previousGridY = this.gridY;
 	base.Update();
@@ -22,7 +33,6 @@ public class Shootable : Moveable {
     }
 
     public void Break() {
-	this.level.UnregisterTarget(this);
-	GameObject.Destroy(this.gameObject);
+	this.markedForBreak = true;
     }
 }

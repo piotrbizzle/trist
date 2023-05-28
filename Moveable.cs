@@ -112,7 +112,7 @@ public class Moveable : MonoBehaviour {
 	}
     }
 
-    private void Break() {
+    public void Break() {
 	GameObject.Destroy(this.gameObject);
     }
     
