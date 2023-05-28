@@ -19,7 +19,7 @@ public class Level : MonoBehaviour {
     public int blocksY;
     private Material[,] blockGrid;
 
-    private Dictionary<int, IntVector2> targetRegistry = new Dictionary<int, IntVector2>(){};
+    private Dictionary<int, List<IntVector2>> targetRegistry = new Dictionary<int, List<IntVector2>>(){};
     private List<Shootable>[,] targetGrid;
 
     
@@ -51,15 +51,24 @@ public class Level : MonoBehaviour {
 	if (target.gridX < 0 || target.gridX >= this.blocksX || target.gridY < 0 || target.gridY >= this.blocksY) {
 	    // target out of level
 	    return;
+	}		
+
+	List<IntVector2> targetSpacesList = new List<IntVector2>();
+	for (int i = 0; i < target.gridWidth + 1; i++) {
+	    for (int j = 0; j < target.gridHeight + 1; j++) {
+		targetSpacesList.Add(new IntVector2(target.gridX + i, target.gridY + j));
+		this.targetGrid[target.gridX + i, target.gridY + j].Add(target);	
+	    }
 	}
-	this.targetRegistry[target.gameObject.GetInstanceID()] = new IntVector2(target.gridX, target.gridY);
-	this.targetGrid[target.gridX, target.gridY].Add(target);	
+	this.targetRegistry[target.gameObject.GetInstanceID()] = targetSpacesList;
     }
 
     public void UnregisterTarget(Shootable target) {
-	int targetID = target.gameObject.GetInstanceID();
-	IntVector2 targetPosition = this.targetRegistry[targetID];
-	this.targetGrid[targetPosition.x, targetPosition.y].Remove(target);
+	int targetID = target.gameObject.GetInstanceID();       
+	List<IntVector2> targetPositions = this.targetRegistry[targetID];
+	foreach (IntVector2 targetPosition in targetPositions) {
+	    this.targetGrid[targetPosition.x, targetPosition.y].Remove(target);
+	}
 	this.targetRegistry.Remove(targetID);
     }   
 
@@ -70,11 +79,24 @@ public class Level : MonoBehaviour {
 	    target.Break();
 	    return;
 	}
+
+	// remove previous target grid entries
 	int targetID = target.gameObject.GetInstanceID();
-	IntVector2 previousPosition = this.targetRegistry[targetID];
-	this.targetRegistry[targetID] = new IntVector2(target.gridX, target.gridY);
-	this.targetGrid[previousPosition.x, previousPosition.y].Remove(target);	
-	this.targetGrid[target.gridX, target.gridY].Add(target);	
+	List<IntVector2> previousPositions = this.targetRegistry[targetID];
+	foreach (IntVector2 previousPosition in previousPositions) {
+	    this.targetGrid[previousPosition.x, previousPosition.y].Remove(target);
+	}
+
+	// add new target grid entries
+	List<IntVector2> targetSpacesList = new List<IntVector2>();
+	for (int i = 0; i < target.gridWidth + 1; i++) {
+	    for (int j = 0; j < target.gridHeight + 1; j++) {
+		targetSpacesList.Add(new IntVector2(target.gridX + i, target.gridY + j));
+		this.targetGrid[target.gridX + i, target.gridY + j].Add(target);	
+	    }
+	}
+	this.targetRegistry[target.gameObject.GetInstanceID()] = targetSpacesList;
+
     }
 
     public List<Shootable> GetTargets(int x, int y) {

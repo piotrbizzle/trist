@@ -8,10 +8,6 @@ public class Shootable : Moveable {
     private int previousGridY;
     private bool markedForBreak;
     private bool registered;
-    
-    public override void Start() {
-	base.Start();
-    }
 
     public override void Update() {
 	if (!this.registered) {
