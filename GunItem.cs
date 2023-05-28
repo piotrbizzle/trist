@@ -34,7 +34,7 @@ public class GunItem : Shootable {
     
     public override void Update() {
 	// empty guns expire
-	if (this.expires && !this.pulled) {
+	if (this.expires && !this.pulled && !this.markedForBreak) {
 	    this.lifetime -= Time.deltaTime;
 	    if (this.lifetime <= 0) {
 		this.Break();
@@ -61,8 +61,12 @@ public class GunItem : Shootable {
 
 	    // move toward player
 	    Vector3 moveVector = towardPlayerVector * GunItem.GunFlySpeed;
-	    this.SetMomentumX(moveVector.x);
-	    this.SetMomentumY(moveVector.y);
+	    if ((moveVector.x < 0 && !this.IsSolidLeft()) || (moveVector.x >= 0 && !this.IsSolidRight())) {
+		this.SetMomentumX(moveVector.x);
+	    }
+	    if ((moveVector.y < 0 && !this.OnSolidGround()) || (moveVector.y >= 0 && !this.IsSolidUp())) {
+		this.SetMomentumY(moveVector.y);
+	    }
 	}
 	
 	base.Update();

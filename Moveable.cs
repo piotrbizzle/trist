@@ -160,6 +160,20 @@ public class Moveable : MonoBehaviour {
 	return false;
     }
     
+    public bool IsSolidUp() {
+	float topY = this.transform.position.y + (float)this.gridHeight / 2;
+	if (Math.Ceiling(topY) - topY >= 0.1f) {
+	    return false;
+	}
+	
+	for (int i = 0; i < this.gridWidth + 1; i++) {
+	    if (this.DoesMaterialCollide(this.level.GetBlock(this.gridX + i, this.gridY + 1))) {
+		return true;
+	    }
+	}
+	return false;
+    }
+
     public bool IsSolidLeft() {
 	float leftX = this.transform.position.x - (float)this.gridWidth / 2;
 	if (leftX - Math.Floor(leftX) >= 0.1f) {

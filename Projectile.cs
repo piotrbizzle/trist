@@ -22,7 +22,7 @@ public class Projectile : Moveable {
 	if (shootables.Count > 0) {
 	    foreach (Shootable shootable in shootables) {
 		// skip checking hits on incompatible pull/pullable pairs
-		if (!this.pulls && shootable.pullable) {
+		if (this.pulls != shootable.pullable) {
 		    continue;
 		}
 
