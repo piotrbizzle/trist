@@ -12,7 +12,10 @@ public class EnemyGunHaver : NPC {
     private GameObject gunGo;
     public float alertDistance;  // TODO: rework as zone
     private float runSpeed = 4f;    
+    public Sprite standSprite;
+    public Sprite reloadSprite;
 
+    
     private float reloadCooldown;
     
     // related objects
@@ -20,11 +23,16 @@ public class EnemyGunHaver : NPC {
     
     public override void Start() {
 	this.player = GameObject.Find("level/player").GetComponent<Player>();
+
+	// add gun
 	this.gunGo = new GameObject();
 	this.gunGo.AddComponent<Gun>().CopyFromTemplate(this.gun, this.gunItemSprite);
 	this.gunGo.GetComponent<SpriteRenderer>().sprite = this.heldGunSprite
 ;
 	this.gunGo.transform.parent = this.transform;
+
+	// set up sprites
+	this.standSprite = this.GetComponent<SpriteRenderer>().sprite;
 	
 	base.Start();
     }    
@@ -45,6 +53,14 @@ public class EnemyGunHaver : NPC {
     }
 
     public void Fight() {
+	// reload if needed
+	if (this.reloadCooldown > 0) {
+	    this.SwapSprite(this.reloadSprite);
+	    this.reloadCooldown -= Time.deltaTime;
+	    return;
+	}
+	this.SwapSprite(this.standSprite);
+
 	// move toward player
 	if (this.player.transform.position.x < this.transform.position.x) {
 	    this.isFacingLeft = true;
@@ -60,12 +76,6 @@ public class EnemyGunHaver : NPC {
 	    } else {
 		this.SetMomentumX(0);
 	    }
-	}
-
-	// reload
-	if (this.reloadCooldown > 0) {
-	    this.reloadCooldown -= Time.deltaTime;
-	    return;
 	}
 
 	// aim at player
@@ -88,5 +98,10 @@ public class EnemyGunHaver : NPC {
     public override void GetDestroyed() {	
 	this.gunGo.GetComponent<Gun>().Discard(this.isFacingLeft);
 	base.GetDestroyed();
+    }
+
+    private void SwapSprite(Sprite sprite) {
+	this.transform.Translate(Vector3.down * ((float)(this.GetComponent<SpriteRenderer>().sprite.rect.height - sprite.rect.height) / 200f));
+	this.GetComponent<SpriteRenderer>().sprite = sprite;
     }
 }

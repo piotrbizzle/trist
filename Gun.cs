@@ -18,6 +18,7 @@ public class Gun : MonoBehaviour {
     public Sprite itemSprite;
     public bool pulls;
     public int damage;
+    public int numberOfProjectiles = 1;
     
     public Vector3 aimVector;
     private float cooldown;
@@ -29,6 +30,7 @@ public class Gun : MonoBehaviour {
     }	
     
     public void Fire(bool isFriendly) {
+	// check if ready to fire
 	if (this.cooldown > 0) {
 	    return;
 	} else if (this.ammo == 0) {
@@ -37,30 +39,45 @@ public class Gun : MonoBehaviour {
 	} else if (this.ammo > 0) {
 	    this.ammo--;
 	}
+
+	// create projectiles
+	for (int i = 0; i < this.numberOfProjectiles; i++) {
+	    GameObject projectileGo = new GameObject();
+	    projectileGo.transform.position = this.transform.position;
+	    projectileGo.transform.rotation = this.transform.rotation;
+	    projectileGo.AddComponent<SpriteRenderer>().sprite = this.projectileSprite;
 	
-	GameObject projectileGo = new GameObject();
-	projectileGo.transform.position = this.transform.position;
-	projectileGo.transform.rotation = this.transform.rotation;
-	projectileGo.AddComponent<SpriteRenderer>().sprite = this.projectileSprite;
-	
-	if (this.ammo != -1) {
-	    // pickupable weapon
-	    projectileGo.transform.SetParent(this.transform.parent.parent);
-	} else {
-	    // player weapon
-	    projectileGo.transform.SetParent(this.transform.parent);
+	    if (this.ammo != -1) {
+		// pickupable weapon
+		projectileGo.transform.SetParent(this.transform.parent.parent);
+	    } else {
+		// player weapon
+		projectileGo.transform.SetParent(this.transform.parent);
+	    }
+
+	    
+	    Projectile projectile = projectileGo.AddComponent<Projectile>();
+	    Vector3 projectileVector = new Vector3(this.aimVector.x, this.aimVector.y, 0);
+	    projectileVector = this.Scatter(projectileVector, i);
+	    projectile.AddMomentum(projectileVector.x * this.projectileSpeed, projectileVector.y * this.projectileSpeed);
+
+	    // pass on projectile properties
+	    projectile.breakOnHit = this.breakOnHit;
+	    projectile.affectedByGravity = this.affectedByGravity;
+	    projectile.lifetime = 2.0f;
+	    projectile.pulls = this.pulls;
+	    projectile.isFriendly = isFriendly;
+	    projectile.damage = this.damage;
 	}
 
-	Projectile projectile = projectileGo.AddComponent<Projectile>();
-	projectile.AddMomentum(this.aimVector.x * this.projectileSpeed, this.aimVector.y * this.projectileSpeed);
-	projectile.breakOnHit = this.breakOnHit;
-	projectile.affectedByGravity = this.affectedByGravity;
-	projectile.lifetime = 2.0f;
-	projectile.pulls = this.pulls;
-	projectile.isFriendly = isFriendly;
-	projectile.damage = this.damage;
-
 	this.cooldown = this.rateOfFire;
+    }
+
+    private Vector3 Scatter(Vector3 vector, int scatterAmount) {
+	if (scatterAmount == 0) {
+	    return vector;
+	}
+	return Quaternion.Euler(0, 0, Random.Range(-scatterAmount * 10f, scatterAmount * 10f)) * vector;			     
     }
 
     public void Discard(bool isFacingLeft) {
@@ -106,7 +123,9 @@ public class Gun : MonoBehaviour {
 	this.selectedSprite = gun.selectedSprite;
 	this.deselectedSprite = gun.deselectedSprite;
 	this.damage = gun.damage;
+	this.numberOfProjectiles = gun.numberOfProjectiles;
 	this.itemSprite = itemSprite;
+
 	
 	// set sprite
 	this.gameObject.AddComponent<SpriteRenderer>().sprite = this.deselectedSprite;

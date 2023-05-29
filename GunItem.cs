@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class GunItem : Shootable {
     // constants
     public static float EmptyGunLifetime = 3f;
-    public static float GunFlySpeed = 6f;
+    public static float GunFlySpeed = 8f;
 
     // gun template
     public Gun gun;
