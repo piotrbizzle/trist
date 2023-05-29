@@ -9,24 +9,25 @@ public class Gun : MonoBehaviour {
     public Sprite projectileSprite;
     public bool breakOnHit = true;
     public bool affectedByGravity = false;
+    public int maxAmmo = -1;
     public int ammo = -1;
     public float rateOfFire = 0.5f;
+    public float reloadTime = 1.0f;
     public Sprite deselectedSprite;
     public Sprite selectedSprite;
     public Sprite itemSprite;
     public bool pulls;
 
-    
     public Vector3 aimVector;
     private float cooldown;
-
+    
     public void Update() {
 	if (this.cooldown > 0) {
 	    this.cooldown -= Time.deltaTime;
 	}
     }	
     
-    public void Fire() {
+    public void Fire(bool isFriendly) {
 	if (this.cooldown > 0) {
 	    return;
 	} else if (this.ammo == 0) {
@@ -55,12 +56,13 @@ public class Gun : MonoBehaviour {
 	projectile.affectedByGravity = this.affectedByGravity;
 	projectile.lifetime = 2.0f;
 	projectile.pulls = this.pulls;
+	projectile.isFriendly = isFriendly;
 
 	this.cooldown = this.rateOfFire;
     }
 
     public void Discard(bool isFacingLeft) {
-	if (this.ammo != -1) {
+	if (this.maxAmmo != -1) {
 	    // create GunItem
 	    GameObject gunItemGo = new GameObject();
 	    gunItemGo.transform.position = this.transform.position;
@@ -96,6 +98,7 @@ public class Gun : MonoBehaviour {
 	this.projectileSprite = gun.projectileSprite;
 	this.breakOnHit = gun.breakOnHit;
 	this.affectedByGravity = gun.affectedByGravity;
+	this.maxAmmo = gun.maxAmmo;
 	this.ammo = gun.ammo;
 	this.rateOfFire = gun.rateOfFire;
 	this.selectedSprite = gun.selectedSprite;

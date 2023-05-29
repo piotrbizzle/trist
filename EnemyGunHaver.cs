@@ -10,9 +10,11 @@ public class EnemyGunHaver : NPC {
     public Sprite gunItemSprite;
     public Gun gun;
     private GameObject gunGo;
-    public float alertDistance;
+    public float alertDistance;  // TODO: rework as zone
     private float runSpeed = 4f;    
 
+    private float reloadCooldown;
+    
     // related objects
     private Player player;
     
@@ -26,6 +28,8 @@ public class EnemyGunHaver : NPC {
 	
 	base.Start();
     }
+
+    
     
     public override void NPCMove() {
 	if (this.PlayerManhattanDistance() < this.alertDistance) {	    
@@ -60,12 +64,26 @@ public class EnemyGunHaver : NPC {
 	    }
 	}
 
+	// reload
+	if (this.reloadCooldown > 0) {
+	    this.reloadCooldown -= Time.deltaTime;
+	    return;
+	}
+
 	// aim at player
 	Quaternion baseRotation = Quaternion.FromToRotation(Vector3.up, this.player.transform.position - this.transform.position);
-	this.gunGo.GetComponent<Gun>().aimVector = (this.player.transform.position - this.transform.position).normalized;
+	Gun gun = this.gunGo.GetComponent<Gun>();
+	gun.aimVector = (this.player.transform.position - this.transform.position).normalized;
 	this.gunGo.transform.rotation = baseRotation;
 	
 	// assume 2 units tall
 	this.gunGo.transform.position = this.transform.position + new Vector3(0f, 0.5f, 0.0f);
+
+	// try to fire gun
+	gun.Fire(false);
+	if (gun.ammo == 0) {
+	    gun.ammo = gun.maxAmmo;
+	    this.reloadCooldown = gun.reloadTime;
+	}
     }
 }

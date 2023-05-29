@@ -40,6 +40,14 @@ public class Block : MonoBehaviour {
 	}
     }
 
+    public void Transform(Level.Material material) {
+	for (int i = 0; i < this.gridWidth; i++) {
+	    for (int j = 0; j < this.gridHeight; j++) {
+		this.level.SetBlock(this.gridX + i, this.gridY + j, material);
+	    }
+	}
+    }
+
     private void DetermineGridPosition() {
 	this.gridHeight = (int)Math.Floor(this.GetComponent<SpriteRenderer>().sprite.rect.height / 100);
 	this.gridWidth = (int)Math.Floor(this.GetComponent<SpriteRenderer>().sprite.rect.width / 100);

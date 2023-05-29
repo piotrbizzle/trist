@@ -13,7 +13,7 @@ public class IntVector2 {
 }
 
 public class Level : MonoBehaviour {
-    public enum Material {Air, Concrete};
+    public enum Material {Air, Concrete, Breakable};
 
     public int blocksX;
     public int blocksY;
@@ -78,7 +78,6 @@ public class Level : MonoBehaviour {
 	}
 	if (target.gridX < 0 || target.gridX >= this.blocksX || target.gridY < 0 || target.gridY >= this.blocksY) {
 	    // target out of level, destroy it
-	    this.UnregisterTarget(target);
 	    target.Break();
 	    return;
 	}

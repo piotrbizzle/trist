@@ -5,6 +5,7 @@ using UnityEngine;
 public class Projectile : Moveable {
     public float lifetime;
     public bool pulls;
+    public bool isFriendly;
     
     public override void Update() {
 	this.lifetime -= Time.deltaTime;
@@ -21,8 +22,13 @@ public class Projectile : Moveable {
 	List<Shootable> shootables = this.level.GetTargets(this.gridX, gridY);
 	if (shootables.Count > 0) {
 	    foreach (Shootable shootable in shootables) {
+		// skip checking hits on friendly fire
+		if (this.isFriendly == shootable.isFriendly) {
+		    continue;
+		}
+		
 		// skip checking hits on incompatible pull/pullable pairs
-		if (this.pulls != shootable.pullable) {
+		if (!this.pulls && shootable.pullable) {
 		    continue;
 		}
 
@@ -56,5 +62,10 @@ public class Projectile : Moveable {
 	
 	// otherwise, check move as normal
 	return base.CheckPartialMove(previousPosition, previousGridX, previousGridY);
+    }
+
+    public override bool DoesMaterialCollide(Level.Material material) {
+	// projectiles don't deflect off breakables
+	return material != Level.Material.Air && material != Level.Material.Breakable;
     }
 }

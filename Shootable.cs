@@ -10,6 +10,7 @@ public class Shootable : Moveable {
     private int previousGridX;
     private int previousGridY;
     public bool markedForBreak;
+    public bool isFriendly;
     private bool registered;
 
     public override void Update() {

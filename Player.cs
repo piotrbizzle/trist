@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : Moveable {
+public class Player : Shootable {
     // constants
     public static int MaxGuns = 6;
     public float MoveSpeed = 15f;
@@ -32,6 +32,10 @@ public class Player : Moveable {
 	this.RefreshJumps();	
         this.CheckGuns();
 	base.Update();
+    }
+
+    public override void Hit() {
+	Debug.Log("HIT!");
     }
 
     private void RefreshJumps() {
@@ -124,7 +128,7 @@ public class Player : Moveable {
 	}
 
 	if (mouse1Pressed) {
-	    this.GetComponent<Gun>().Fire();
+	    this.GetComponent<Gun>().Fire(true);
 	}
 
 	// gun stuff only past this point
@@ -134,7 +138,7 @@ public class Player : Moveable {
 
 	// shoot
 	if (mouse0Pressed) {
-	    this.activeGun.Fire();
+	    this.activeGun.Fire(true);
 	}
 
 	// discard gun

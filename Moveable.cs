@@ -181,7 +181,7 @@ public class Moveable : MonoBehaviour {
 	}
 	
 	for (int i = 0; i < this.gridHeight + 1; i++) {
-	    if (this.DoesMaterialCollide(this.level.GetBlock(this.gridX - 1, this.gridY + i))) {
+	    if (this.DoesMaterialCollide(this.level.GetBlock(this.gridX - 1, this.gridY + i))) {		
 		return true;
 	    }
 	}
@@ -195,7 +195,7 @@ public class Moveable : MonoBehaviour {
 	}
 	
 	for (int i = 0; i < this.gridHeight + 1; i++) {
-	    if (this.DoesMaterialCollide(this.level.GetBlock(this.gridX + this.gridWidth + 1, this.gridY + i))) {	
+	    if (this.DoesMaterialCollide(this.level.GetBlock(this.gridX + this.gridWidth + 1, this.gridY + i))) {
 		return true;
 	    }
 	}
