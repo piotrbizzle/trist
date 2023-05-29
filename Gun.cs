@@ -47,12 +47,10 @@ public class Gun : MonoBehaviour {
 	    projectileGo.transform.rotation = this.transform.rotation;
 	    projectileGo.AddComponent<SpriteRenderer>().sprite = this.projectileSprite;
 	
-	    if (this.ammo != -1) {
-		// pickupable weapon
-		projectileGo.transform.SetParent(this.transform.parent.parent);
-	    } else {
-		// player weapon
+	    if (this.transform.parent.GetComponent<Level>() != null) {
 		projectileGo.transform.SetParent(this.transform.parent);
+	    } else {
+		projectileGo.transform.SetParent(this.transform.parent.parent);
 	    }
 
 	    

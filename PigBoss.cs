@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PigBoss : Block {
-    public List<PigBossHead> heads;  // expect them to also be guns!
+    public int totalHeads;
     private bool markedForBreak;
     
     public override void Update() {
@@ -12,9 +12,6 @@ public class PigBoss : Block {
 	    return;
 	}
 
-	foreach (PigBossHead head in this.heads) {
-	    head.HeadMove();
-	}
 	base.Update();
     }
 

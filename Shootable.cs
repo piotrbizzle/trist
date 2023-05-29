@@ -15,6 +15,7 @@ public class Shootable : Moveable {
     private bool registered;
 
     public override void Update() {
+	// register in first frame
 	if (!this.registered) {
 	    this.level.RegisterTarget(this);
 	    this.registered = true;
