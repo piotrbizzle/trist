@@ -7,22 +7,33 @@ using UnityEngine.EventSystems;
 public class EnemyGunHaver : NPC {
     // configurables
     public Sprite heldGunSprite;
+    public Sprite gunItemSprite;
     public Gun gun;
+    private GameObject gunGo;
     public float alertDistance;
-    private float runSpeed = 4f;
+    private float runSpeed = 4f;    
 
     // related objects
     private Player player;
     
     public override void Start() {
-	base.Start();
 	this.player = GameObject.Find("level/player").GetComponent<Player>();
+	this.gunGo = new GameObject();
+	this.gunGo.AddComponent<Gun>().CopyFromTemplate(this.gun, this.gunItemSprite);
+	this.gunGo.GetComponent<SpriteRenderer>().sprite = this.heldGunSprite
+;
+	this.gunGo.transform.parent = this.transform;
+	
+	base.Start();
     }
     
     public override void NPCMove() {
-	if (this.PlayerManhattanDistance() < this.alertDistance) {
+	if (this.PlayerManhattanDistance() < this.alertDistance) {	    
 	    this.Fight();
 	} else {
+	    this.gunGo.GetComponent<Gun>().aimVector = new Vector3(0, -1, 0);
+	    this.gunGo.transform.rotation = Player.RotationsMap[0][0];
+	    this.gunGo.transform.position = this.transform.position + new Vector3(0f, 0.5f, 0.0f);
 	    this.Wander();
 	}
     }
@@ -48,5 +59,13 @@ public class EnemyGunHaver : NPC {
 		this.SetMomentumX(0);
 	    }
 	}
+
+	// aim at player
+	Quaternion baseRotation = Quaternion.FromToRotation(Vector3.up, this.player.transform.position - this.transform.position);
+	this.gunGo.GetComponent<Gun>().aimVector = (this.player.transform.position - this.transform.position).normalized;
+	this.gunGo.transform.rotation = baseRotation;
+	
+	// assume 2 units tall
+	this.gunGo.transform.position = this.transform.position + new Vector3(0f, 0.5f, 0.0f);
     }
 }
