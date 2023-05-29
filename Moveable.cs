@@ -131,7 +131,7 @@ public class Moveable : MonoBehaviour {
     }
 
     public virtual bool DoesMaterialCollide(Level.Material material) {
-	return material != Level.Material.Air;
+	return material != Level.Material.Air && material != Level.Material.Boss;;
     }    
     
     public void AddMomentum(float x, float y) {

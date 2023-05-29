@@ -66,7 +66,6 @@ public class Projectile : Moveable {
     }
 
     public override bool DoesMaterialCollide(Level.Material material) {
-	// projectiles don't deflect off breakables
-	return material != Level.Material.Air && material != Level.Material.Breakable;
+	return material == Level.Material.Concrete;
     }
 }

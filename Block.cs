@@ -28,7 +28,7 @@ public class Block : MonoBehaviour {
 	this.transform.position = new Vector2(this.gridX + (float)this.gridWidth / 2, this.gridY + (float)this.gridHeight / 2);
     }
     
-    public void Update() {
+    public virtual void Update() {
 	// add to grid on first update to guarantee parent Level is ready
 	if (!this.inited) {
 	    for (int i = 0; i < this.gridWidth; i++) {

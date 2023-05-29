@@ -13,7 +13,7 @@ public class IntVector2 {
 }
 
 public class Level : MonoBehaviour {
-    public enum Material {Air, Concrete, Breakable};
+    public enum Material {Air, Concrete, Breakable, Boss};
 
     public int blocksX;
     public int blocksY;

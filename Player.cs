@@ -154,5 +154,9 @@ public class Player : Shootable {
 	    this.transform.GetChild(0).SetAsLastSibling();
 	}
     }
+
+    public override bool DoesMaterialCollide(Level.Material material) {
+	return material != Level.Material.Air;
+    }
 }
 
