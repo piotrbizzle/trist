@@ -27,8 +27,8 @@ public class EnemyGunHaver : NPC {
 	// add gun
 	this.gunGo = new GameObject();
 	this.gunGo.AddComponent<Gun>().CopyFromTemplate(this.gun, this.gunItemSprite);
-	this.gunGo.GetComponent<SpriteRenderer>().sprite = this.heldGunSprite
-;
+	this.gunGo.GetComponent<SpriteRenderer>().sprite = this.heldGunSprite;
+	this.gunGo.GetComponent<SpriteRenderer>().color = this.gameObject.GetComponent<SpriteRenderer>().color;
 	this.gunGo.transform.parent = this.transform;
 
 	// set up sprites
@@ -46,6 +46,7 @@ public class EnemyGunHaver : NPC {
 	    this.gunGo.transform.position = this.transform.position + new Vector3(0f, 0.5f, 0.0f);
 	    this.Wander();
 	}
+	this.gunGo.GetComponent<SpriteRenderer>().flipX = this.isFacingLeft;
     }
     
     public int PlayerManhattanDistance() {

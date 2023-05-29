@@ -35,12 +35,11 @@ public class Player : Shootable {
 
 	// TODO: clean these up
 	this.healthBar.transform.position = this.transform.position + Vector3.up * 1.3f;
-	if (this.transform.position.y < this.level.nextLevelYLine) {
+	if (this.transform.position.x > this.level.nextLevelXLine) {
 	    this.level.NextLevel();
 	}
-	if (this.isFacingLeft) {
-	    this.gameObject.GetComponent<SpriteRenderer>().flipX = true;
-	}
+	this.gameObject.GetComponent<SpriteRenderer>().flipX = this.isFacingLeft;
+
 	base.Update();
     }
 

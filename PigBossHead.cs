@@ -68,7 +68,7 @@ public class PigBossHead : Shootable {
 	if (this.pigBoss.heads.Count <= 0) {
 	    this.pigBoss.Break();
 	}
-	this.GetComponent<Gun>().Discard(true);
+	this.GetComponent<Gun>().Discard(false);
     }
 
     public override void Hit(int damage) {

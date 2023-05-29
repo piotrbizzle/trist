@@ -21,7 +21,7 @@ public class Level : MonoBehaviour {
     public int blocksY;
     public string thisLevelName;
     public string nextLevelName;
-    public float nextLevelYLine;  // cross this to go the next level
+    public float nextLevelXLine;  // cross this to go the next level
     
     // related game objects
     public GameObject eventSystemGo;

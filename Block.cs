@@ -10,10 +10,10 @@ public class Block : MonoBehaviour {
 
     // inferred fields
     private bool inited = false; 
-    private int gridX;
-    private int gridY;
-    private int gridHeight;
-    private int gridWidth;
+    public int gridX;
+    public int gridY;
+    public int gridHeight;
+    public int gridWidth;
 
     // related objects
     private Level level;
