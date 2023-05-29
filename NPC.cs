@@ -9,7 +9,7 @@ public class NPC : Shootable {
     
     public override void Update() {
 	this.NPCMove();
-	base.Update();
+	this.gameObject.GetComponent<SpriteRenderer>().flipX = this.isFacingLeft;	base.Update();
     }
 
     public virtual void NPCMove() {

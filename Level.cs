@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class IntVector2 {
     public int x;
@@ -15,13 +16,32 @@ public class IntVector2 {
 public class Level : MonoBehaviour {
     public enum Material {Air, Concrete, Breakable, Boss};
 
+    // configurables
     public int blocksX;
     public int blocksY;
+    public string thisLevelName;
+    public string nextLevelName;
+    public float nextLevelYLine;  // cross this to go the next level
+    
+    // related game objects
+    public GameObject eventSystemGo;
+    
     private Material[,] blockGrid;
 
     private Dictionary<int, List<IntVector2>> targetRegistry = new Dictionary<int, List<IntVector2>>(){};
     private List<Shootable>[,] targetGrid;
 
+    public void ResetLevel() {
+	    // turn off event system from old scene
+	    GameObject.Destroy(this.eventSystemGo);
+	    SceneManager.LoadScene(this.thisLevelName);	    
+    }
+
+    public void NextLevel() {
+	    // turn off event system from old scene
+	    GameObject.Destroy(this.eventSystemGo);
+	    SceneManager.LoadScene(this.nextLevelName);	    
+    }
     
     public void Start() {
 	// init grid

@@ -32,7 +32,15 @@ public class Player : Shootable {
 	this.ControlPlayer();
 	this.RefreshJumps();	
         this.CheckGuns();
+
+	// TODO: clean these up
 	this.healthBar.transform.position = this.transform.position + Vector3.up * 1.3f;
+	if (this.transform.position.y < this.level.nextLevelYLine) {
+	    this.level.NextLevel();
+	}
+	if (this.isFacingLeft) {
+	    this.gameObject.GetComponent<SpriteRenderer>().flipX = true;
+	}
 	base.Update();
     }
 
@@ -41,7 +49,7 @@ public class Player : Shootable {
 	if (this.health > 0) {
 	    this.healthBar.SetHealth(this.health);
 	} else {
-	    Debug.Log("YA DIED");
+	    this.level.ResetLevel();
 	}
     }
 
