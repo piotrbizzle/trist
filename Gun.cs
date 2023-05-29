@@ -4,6 +4,9 @@ using UnityEngine;
 
 
 public class Gun : MonoBehaviour {
+    // constants
+    private float projectileBounceMultiplier = 0.3f;
+    
     // configurables
     public float projectileSpeed;
     public Sprite projectileSprite;
@@ -66,6 +69,7 @@ public class Gun : MonoBehaviour {
 	    projectile.pulls = this.pulls;
 	    projectile.isFriendly = isFriendly;
 	    projectile.damage = this.damage;
+	    projectile.bounceMultiplier = this.projectileBounceMultiplier;
 	}
 
 	this.cooldown = this.rateOfFire;
@@ -83,11 +87,16 @@ public class Gun : MonoBehaviour {
 	    // create GunItem
 	    GameObject gunItemGo = new GameObject();
 	    gunItemGo.transform.position = this.transform.position;
-	    gunItemGo.transform.SetParent(this.transform.parent.parent);
 	    gunItemGo.AddComponent<SpriteRenderer>().sprite = this.itemSprite;
 	    GunItem gunItem = gunItemGo.AddComponent<GunItem>();
 	    gunItem.gun = this.GetComponent<Gun>();
+	    if (this.transform.parent.GetComponent<Level>() != null) {
+		gunItemGo.transform.SetParent(this.transform.parent);
+	    } else {
+		gunItemGo.transform.SetParent(this.transform.parent.parent);
+	    }
 
+	    
 	    if (isFacingLeft) {
 		gunItem.SetMomentumX(5f);
 	    } else {

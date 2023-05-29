@@ -9,7 +9,6 @@ public class PigBossHead : Shootable {
     public float orbitSpeed;
     public float weakenedTime;
     public Sprite weakSprite;
-    public float reloadCooldown;
     
     private Sprite readySprite;
     private Vector3 hingePosition;
@@ -25,7 +24,7 @@ public class PigBossHead : Shootable {
 	this.player = GameObject.Find("level/player").GetComponent<Player>();
 	this.readySprite = this.gameObject.GetComponent<SpriteRenderer>().sprite;
 	this.hingePosition = this.transform.position;
-	this.pigBoss.totalHeads += 1;
+	this.pigBoss.heads.Add(this);
     }
 
     public override void Update() {	
@@ -44,31 +43,32 @@ public class PigBossHead : Shootable {
 	    this.gameObject.GetComponent<SpriteRenderer>().sprite = this.readySprite;	    	
 	    Quaternion baseRotation = Quaternion.FromToRotation(Vector3.up, this.player.transform.position - this.transform.position);
 	    this.transform.rotation = baseRotation;
-	}
-	
-	// attack
-	if (this.reloadCooldown > 0) {
-	    this.reloadCooldown -= Time.deltaTime;	    
-	} else {
-	    Gun gun = this.gameObject.GetComponent<Gun>();
-	    gun.aimVector = (this.player.transform.position - this.transform.position).normalized;
-	    gun.Fire(false);
-	    if (gun.ammo == 0) {		
-		gun.ammo = gun.maxAmmo;
-		this.weakenedCooldown = this.weakenedTime;
-		this.reloadCooldown = gun.reloadTime;
-	    }
-	}
+	}	
 
 	base.Update();
     }
 
+    public void Attack() {
+	if (this.weakenedCooldown > 0) {
+	    return;
+	}
+	Gun gun = this.gameObject.GetComponent<Gun>();
+	gun.aimVector = (this.player.transform.position - this.transform.position).normalized;
+	gun.Fire(false);
+	if (gun.ammo == 0) {		
+	    gun.ammo = gun.maxAmmo;
+	    this.weakenedCooldown = this.weakenedTime;
+	    this.pigBoss.NextHead();
+	}
+    }
+
     public override void GetDestroyed() {
-	this.pigBoss.totalHeads -= 1;
-	if (this.pigBoss.totalHeads <= 0) {
+	this.pigBoss.heads.Remove(this);
+	this.level.UnregisterTarget(this);
+	if (this.pigBoss.heads.Count <= 0) {
 	    this.pigBoss.Break();
 	}
-	base.GetDestroyed();
+	this.GetComponent<Gun>().Discard(true);
     }
 
     public override void Hit(int damage) {
