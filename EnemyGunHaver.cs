@@ -27,9 +27,7 @@ public class EnemyGunHaver : NPC {
 	this.gunGo.transform.parent = this.transform;
 	
 	base.Start();
-    }
-
-    
+    }    
     
     public override void NPCMove() {
 	if (this.PlayerManhattanDistance() < this.alertDistance) {	    
@@ -85,5 +83,10 @@ public class EnemyGunHaver : NPC {
 	    gun.ammo = gun.maxAmmo;
 	    this.reloadCooldown = gun.reloadTime;
 	}
+    }
+
+    public override void GetDestroyed() {	
+	this.gunGo.GetComponent<Gun>().Discard(this.isFacingLeft);
+	base.GetDestroyed();
     }
 }

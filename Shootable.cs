@@ -6,6 +6,7 @@ using UnityEngine;
 public class Shootable : Moveable {
     // configurable
     public bool pullable;
+    public int health;
     
     private int previousGridX;
     private int previousGridY;
@@ -19,8 +20,7 @@ public class Shootable : Moveable {
 	    this.registered = true;
 	}
 	if (this.markedForBreak) {
-	    this.level.UnregisterTarget(this);
-	    GameObject.Destroy(this.gameObject);
+	    this.GetDestroyed();
 	    return;
 	}
 	
@@ -32,11 +32,20 @@ public class Shootable : Moveable {
 	}
     }
 
+    public virtual void Hit(int damage) {
+	this.health -= damage;
+	if (this.health <= 0) {
+	    this.Break();
+	}
+    }
+    
     public override void Break() {
 	this.markedForBreak = true;
     }
 
-    public virtual void Hit() {
-	this.Break();
-    }
+    public virtual void GetDestroyed() {
+	this.level.UnregisterTarget(this);
+	GameObject.Destroy(this.gameObject);
+    }    
+    
 }

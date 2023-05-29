@@ -79,7 +79,9 @@ public class Moveable : MonoBehaviour {
 	    };
 
 	    // check for collisions
-	    this.CheckPartialMove(previousPosition, previousGridX, previousGridY);
+	    if (!this.CheckPartialMove(previousPosition, previousGridX, previousGridY)) {
+		return;
+	    };
 
 	    // no collision
 	    previousPosition = this.transform.position;

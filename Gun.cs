@@ -17,7 +17,8 @@ public class Gun : MonoBehaviour {
     public Sprite selectedSprite;
     public Sprite itemSprite;
     public bool pulls;
-
+    public int damage;
+    
     public Vector3 aimVector;
     private float cooldown;
     
@@ -57,6 +58,7 @@ public class Gun : MonoBehaviour {
 	projectile.lifetime = 2.0f;
 	projectile.pulls = this.pulls;
 	projectile.isFriendly = isFriendly;
+	projectile.damage = this.damage;
 
 	this.cooldown = this.rateOfFire;
     }
@@ -72,9 +74,9 @@ public class Gun : MonoBehaviour {
 	    gunItem.gun = this.GetComponent<Gun>();
 
 	    if (isFacingLeft) {
-		gunItem.SetMomentumX(this.transform.parent.GetComponent<Player>().momentumX + 5f);
+		gunItem.SetMomentumX(5f);
 	    } else {
-		gunItem.SetMomentumX(this.transform.parent.GetComponent<Player>().momentumX - 5f);
+		gunItem.SetMomentumX(-5f);
 	    }
 	    gunItem.SetMomentumY(5f);
 	    
@@ -103,6 +105,7 @@ public class Gun : MonoBehaviour {
 	this.rateOfFire = gun.rateOfFire;
 	this.selectedSprite = gun.selectedSprite;
 	this.deselectedSprite = gun.deselectedSprite;
+	this.damage = gun.damage;
 	this.itemSprite = itemSprite;
 	
 	// set sprite

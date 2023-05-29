@@ -71,7 +71,7 @@ public class GunItem : Shootable {
 	base.Update();
     }
 
-    public override void Hit() {
+    public override void Hit(int damage) {
 	this.pulled = true;
     }
 }

@@ -34,7 +34,7 @@ public class Player : Shootable {
 	base.Update();
     }
 
-    public override void Hit() {
+    public override void Hit(int damage) {
 	Debug.Log("HIT!");
     }
 
@@ -143,7 +143,7 @@ public class Player : Shootable {
 
 	// discard gun
 	if (discard) {
-	    this.activeGun.Discard(this.isFacingLeft);
+	    this.activeGun.Discard(this.isFacingLeft);	    
 	}
 
 	// switch guns

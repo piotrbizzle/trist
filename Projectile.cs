@@ -6,6 +6,7 @@ public class Projectile : Moveable {
     public float lifetime;
     public bool pulls;
     public bool isFriendly;
+    public int damage;
     
     public override void Update() {
 	this.lifetime -= Time.deltaTime;
@@ -54,7 +55,7 @@ public class Projectile : Moveable {
 		}
 		
 		// end checking if we hit something
-		shootable.Hit();
+		shootable.Hit(this.damage);
 		this.Break();
 		return false;
 	    }	   
