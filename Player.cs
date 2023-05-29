@@ -8,6 +8,7 @@ public class Player : Shootable {
     public float MoveSpeed = 15f;
     public float JumpSpeed = 20f;
     public float DiveSpeed = 30f;
+    public HealthBar healthBar;
 
     // come on move this somewhere else
     public static Quaternion[][] RotationsMap = new Quaternion[][]{
@@ -31,11 +32,17 @@ public class Player : Shootable {
 	this.ControlPlayer();
 	this.RefreshJumps();	
         this.CheckGuns();
+	this.healthBar.transform.position = this.transform.position + Vector3.up * 1.3f;
 	base.Update();
     }
 
     public override void Hit(int damage) {
-	Debug.Log("HIT!");
+	this.health -= damage;
+	if (this.health > 0) {
+	    this.healthBar.SetHealth(this.health);
+	} else {
+	    Debug.Log("YA DIED");
+	}
     }
 
     private void RefreshJumps() {
